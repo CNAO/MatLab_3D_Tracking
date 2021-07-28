@@ -1,4 +1,4 @@
-function [ dXdt ] = Motion_Eq_Cart( t,X,settings )
+function [ dXdt ] = Motion_Eq(t,X,settings )
 
 % disp(t)
 
