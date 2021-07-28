@@ -50,10 +50,13 @@ vx0 = v_k.*cos(Phi).*sin(Theta);
 vy0 = v_k.*cos(Phi).*cos(Theta);
 vz0 = v_k.*sin(Phi);
 
-X0 = [x0;y0;z0;vx0;vy0;vz0].';
-tend = 1.2/min(v_k); 
-
 %% ODE solver
+
+%Set initial values
+X0 = [x0;y0;z0;vx0;vy0;vz0].';
+
+% Set the simulation end time (distance/velocity)
+tend = 1.2/min(v_k); 
 
 % We can stop the integration when a given event occours
 event = @(t,X)myEvent(X,settings);
