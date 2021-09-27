@@ -56,13 +56,13 @@ vz0 = v_k.*sin(Phi);
 X0 = [x0;y0;z0;vx0;vy0;vz0].';
 
 % Set the simulation end time (distance/velocity)
-tend = 1.2/min(v_k); 
+tend = 2.5/min(v_k); 
 
 % We can stop the integration when a given event occours
 event = @(t,X)myEvent(X,settings);
 
 % Setting the precision for the solver
-opts = odeset('AbsTol',1e-6,'RelTol',1e-4,'InitialStep',(1E-3)/max(v_k));       
+opts = odeset('AbsTol',1e-4,'RelTol',1e-2,'InitialStep',(1E-2)/max(v_k));       
 % opts = odeset('AbsTol',1e-6,'RelTol',1e-4,'InitialStep',(1E-3)/max(v_k),'Events', event);        
 
 fun = @(t,X)Motion_Eq(t,X,settings);
