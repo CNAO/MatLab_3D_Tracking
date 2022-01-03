@@ -1,45 +1,39 @@
 %% Read the magneic field from a .CVS file
-clc, clear all, close all;
+clc, clear, close all;
 
 nHeader =8;
 readFormat = '%f %f %f %f %f %f';
-fileName = 'Field/Field_Grid_demo30def_1300_EBG097.table';
+fileName = 'Field/PatchTotal.table';
 fileID = fopen(fileName,'r');
-
-temp = fgetl(fileID); 
-t=strsplit(temp);
-nz = str2double(t(2));
-ny = str2double(t(3));
-nx = str2double(t(4));
 
 temp_csv = textscan(fileID,readFormat,'HeaderLines',nHeader);
 fclose(fileID);
 
-x = temp_csv{1}*1.0E-3;    
-y = temp_csv{2}*1.0E-3;
-z = temp_csv{3}*1.0E-3;
-Bx = temp_csv{4};
-By = temp_csv{5};
-Bz = temp_csv{6};
+x = temp_csv{1}*1.0E-3; % [mm] --> [m]
+y = temp_csv{2}*1.0E-3; % [mm] --> [m]
+z = temp_csv{3}*1.0E-3; % [mm] --> [m]
+Bx = temp_csv{4}; % [T]
+By = temp_csv{5}; % [T]
+Bz = temp_csv{6}; % [T]
+
+%% Plot for verification
+figure;
+plot3(x,y,z);
+axis equal
 
 
-% Save in matlab format the points as they are
-% save('Field/Field.mat','x','y','z','Bx','By','Bz');
+%% Define the interpolation functions of the field
 
-% Re-arragne the coordinate in 3D dimensions (check the number of points in X,Y,Z)
-
-x = reshape(x,nz,ny,nx); x = permute(x,[3 2 1]);
-y = reshape(y,nz,ny,nx); y = permute(y,[3 2 1]);
-z = reshape(z,nz,ny,nx); z = permute(z,[3 2 1]);
-Bx = reshape(Bx,nz,ny,nx); Bx = permute(Bx,[3 2 1]);
-By = reshape(By,nz,ny,nx); By = permute(By,[3 2 1]);
-Bz = reshape(Bz,nz,ny,nx); Bz = permute(Bz,[3 2 1]);
+fBx = scatteredInterpolant(x,y,z,Bx,'linear','none');
+fBy = scatteredInterpolant(x,y,z,By,'linear','none');
+fBz = scatteredInterpolant(x,y,z,Bz,'linear','none');
 
 
 
-save('Field/Field_cubic_demo30def_1300_EBG097.mat','x','y','z','Bx','By','Bz');
-
-
+%%
+% Save in matlab format the interpolation functions
+save('Field/Field_Function_INFN.mat','fBx','fBy','fBz');
+return
 
 %% Some plots for verirication
 
