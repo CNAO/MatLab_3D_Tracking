@@ -4,7 +4,11 @@ function settings = Tracking_3D_From_File(settings, part_file_txt)
 %% Physical parameters
 
 q  = settings.Z_n*1.602176565e-19;           % Charge [Coulomb]
-m0 = settings.A_n*1.672621777e-27;           % Mass [kg]
+% m0 = settings.A_n*1.672621777e-27;         % A_n*Proton Mass [kg]
+m0 = settings.A_n*1.66053906660e-27;         % A_n*Nucleon Mass [kg]
+% m0 = 9.10938356E-31*21874.66;              % mass expressed in terms of electron mass (OPERA)
+
+
 c  = 299792458;                     % Speed of light [m/s]
 eV_J = 1.602176565e-19;             % Ratio between eV and joule    
 
@@ -56,16 +60,16 @@ vz0 = v_k.*sin(Phi);
 X0 = [x0;y0;z0;vx0;vy0;vz0].';
 
 % Set the simulation end time (distance/velocity)
-tend = 1.2/min(v_k); 
+tend = 1.5/min(v_k); 
 
 % We can stop the integration when a given event occours
-event = @(t,X)myEvent(X,settings);
+% event = @(t,X)myEvent(X,settings);
 
 % Setting the precision for the solver
-opts = odeset('AbsTol',1e-6,'RelTol',1e-4,'InitialStep',(1E-3)/max(v_k));       
+opts = odeset('AbsTol',1e-6,'RelTol',1e-6,'InitialStep',(1E-3)/max(v_k));       
 % opts = odeset('AbsTol',1e-6,'RelTol',1e-4,'InitialStep',(1E-3)/max(v_k),'Events', event);        
 
-fun = @(t,X)Motion_Eq(t,X,settings);
+fun = @(t,X)Motion_Eq_INFN(t,X,settings);
 
 fprintf('Calculation of the Particle Trajectories . . . \n');
 [t,X] = ode45(fun,[0,tend],X0,opts);

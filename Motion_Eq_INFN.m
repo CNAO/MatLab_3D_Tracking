@@ -1,4 +1,4 @@
-function [ dXdt ] = Motion_Eq(t,X,settings )
+function [ dXdt ] = Motion_Eq_INFN(t,X,settings )
 
 % disp(t)
 
@@ -9,12 +9,12 @@ vx = X(3*settings.N+1:4*settings.N);
 vy = X(4*settings.N+1:5*settings.N);
 vz = X(5*settings.N+1:6*settings.N);
 
+
 %% Field Interpolation
 
-interp = 'linear';
-Bx = interp3(settings.map.x,settings.map.y,settings.map.z,settings.map.Bx,x,y,z,interp,0);
-By = interp3(settings.map.x,settings.map.y,settings.map.z,settings.map.By,x,y,z,interp,0);
-Bz = interp3(settings.map.x,settings.map.y,settings.map.z,settings.map.Bz,x,y,z,interp,0);
+Bx = settings.fBx([x,y,z]);
+By = settings.fBy([x,y,z]);
+Bz = settings.fBz([x,y,z]);
 
 dvx = settings.qom.*(vy.*Bz - vz.*By);
 dvy = settings.qom.*(vz.*Bx - vx.*Bz);

@@ -1,0 +1,57 @@
+
+option, -echo, -info;
+
+
+!! Element definition !!
+q1: QUADRUPOLE, l:=0.4, k1=1;
+q2: QUADRUPOLE, l:=0.4, k1=0.5;
+
+
+rho = 1.0;
+theta = (pi/4)/2;
+lmb = rho*theta;
+mb: SBEND, l:=lmb, angle:=theta, k1:=-5;
+
+edge: DIPEDGE, H=1/rho, E1=0.2;
+
+PRINTF,TEXT="l: %f", VALUE = lmb;
+
+!! Sequence definition !!
+l_seq:=2*lmb+0.5;
+seq1: sequence, refer=center, l:=l_seq;
+edge1: edge, at=l_seq/2-lmb;
+mb1: mb, at=l_seq/2-lmb/2;
+mb2: mb, at=l_seq/2+lmb/2;
+edge2: edge, at=lmb/2, from=mb2;
+endsequence;
+
+BEAM;
+USE,sequence=seq1;
+
+!! TWISS !!
+!Twiss,chrom=true,rmatrix=true, save,file=twiss.txt,  BETX=1, BETY=1, ALFX=0, ALFY=0;
+!plot,table=twiss, title ='plot',interpolate=true, haxis=s, vaxis1=betx, bety, colour=100;
+select,flag=twiss,column=name,keyword,l,s,re11,re12,re21,re22, re33,re34,re43,re44;
+twiss, rmatrix=true, file=Rmartix.txt, BETX=1, BETY=1, ALFX=0, ALFY=0;
+plot,table=twiss, interpolate=true, haxis=s, vaxis1=betx, bety, colour=100;
+return;
+
+!--------------inizializzazione-----------------------------------
+ptc_create_universe;
+ptc_create_layout, model=2, method=6, nst=100, exact=true, closed_layout=false;
+ptc_align;
+
+/*
+!--------------PTC_TWISS-------------------------------------------
+SELECT, flag=ptc_twiss, clear;
+select,flag=ptc_twiss,column=name, s, beta11, alfa11, beta22, alfa22, disp1, disp2,disp3, disp4, beta11p, alfa11p, beta22p, alfa22p, disp1p, disp2p,disp3p, disp4p, x, px, y, py;
+ptc_twiss, icase=5, no=2, file="PTC_twiss0.txt", norm_no=1, Deltap=deltapin, betx=betaxin, bety=betayin,
+alfx= alfaxin, alfy=alfayin, dx=dxin, dpx=dpxin, dy=dyin, dpy=dpyin, mux=muxin, muy=muyin, x=xin, px=pxin, y=yin, py=pyin;
+*/
+
+!-------------PTC_TRACK------------------------------------------------
+call,file="Particle22.csv";
+call,file="ptc_observe.txt";
+ptc_track,deltap=deltapin,icase=5,element_by_element, dump, onetable, file="PTC_track0.txt", ffile=1;
+ptc_track_end;
+ptc_end;
