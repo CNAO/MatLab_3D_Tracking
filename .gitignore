@@ -1,6 +1,6 @@
-!*.cvs
-!*.asv
-!*.mat
-!Field/
-!Output_Particles/
-!Input_Particles/
+*.cvs
+*.asv
+*.mat
+Field/
+Output_Particles/
+Input_Particles/
