@@ -2,7 +2,7 @@
 
 clear;clc;
 %% In case you want to do all the tracking in the magnet 
-var=1;
+var=0;
 if var==1
     % Reading from a previous tracking and output file 
     fid= fopen(['Output_Particles\Global_Output.csv'],'r');
@@ -13,7 +13,7 @@ if var==1
     y0=temp{2};
     z0=temp{3};
     phi=temp{4};
-    theta=-temp{5};
+    theta=temp{5};
 else
     %% In case you want to track only half of the magnet from the center
     x0=0;y0=0;z0=0;
@@ -23,16 +23,15 @@ end
 %% Beam input file
 
 n=5;
-l=5*1e-3; %7.5 mm
-p=1e-3; %1 mrad
+l=5*1e-3;%15*1e-3; %7.5 mm
+p=1*1e-3;%1e-3; %1 mrad
 x=linspace(l,-l,n)';
 y=linspace(l,-l, n)';
 px=linspace(-p,+p,n)';
 py=linspace(-p,+p,n)';
 n=n^4;
 fileID = fopen(['Input_Particles\Particletot.csv'],'w');
-%En=linspace(430,430,n);
-En=linspace(377.132,377.132,n);
+En=linspace(430,430,n);
 id=linspace(1,n,n);
 s=1;
 fprintf(fileID, 'X[m],pX,Y[m],pY,Theta[rad],Phi[rad],Id,En[MeV],Xideal[m],Yideal[m],Zideal[m]\n');
@@ -46,6 +45,7 @@ for b=1:size(py,1)
         end
     end
 end
+% fprintf(fileID,'%12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f\n',0,0,0,0,theta,phi,2,425,x0,y0,z0);
 fclose(fileID);
 
 
