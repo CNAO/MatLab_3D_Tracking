@@ -4,8 +4,9 @@
 for t=1:size(x,1)
     Mrx=MatrixRotationBuilder(pi/2-phi(t),1);
     Mry=MatrixRotationBuilder(theta(t),2);
+    
     for j=1:settings.N
-        Xbrt{j}(t,:)=Xrt{j}(t,:)*Mrx'*Mry';
+        Xbrt{j}(t,:)=X_local{j}(t,:)*Mrx'*Mry';
         Xb{j}(t,:)=Xbrt{j}(t,:)+Xs{Ideal}(t,:);
     end
 end
@@ -45,34 +46,47 @@ legend;
 return;
 %% Ideal Trajectory Plot
 figure; hold on; grid on; box on; axis equal; title('Trajectory plot');xlabel('x[m]'); ylabel('z[m]');
-h=2;
-plot(x(:,Ideal),z(:,Ideal),'g-');
-plot(x(:,h),z(:,h),'b-');
-plot([x(h,Ideal),x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h))/2],[z(h,Ideal),z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h))/2],'r--');
-plot([x(h,Ideal)+ds(h-1)*sin(pi/2+2*pi-theta(h))/2,x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h)+(3/2)*pi)/2],[z(h,Ideal)+ds(h-1)*cos(pi/2+2*pi-theta(h))/2,z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h)+(3/2)*pi)/2],'k--');
-scatter(Xrt{h}(:,1),Xrt{h}(:,3),15,'ro','filled');
-%scatter(x(:,:),z(:,:),15,'bo','filled');
-%for h=3:size(x,1)
-    %plot([x(h,Ideal),x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h))/2],[z(h,Ideal),z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h))/2],'r--');
-    %plot([x(h,Ideal)+ds(h-1)*sin(pi/2+2*pi-theta(h))/2,x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h)+(3/2)*pi)/2],[z(h,Ideal)+ds(h-1)*cos(pi/2+2*pi-theta(h))/2,z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h)+(3/2)*pi)/2],'k--');
-%end
-
-    for h=1:settings.N
-            scatter(Xrt{h}(:,1),Xrt{h}(:,3),15,'ro','filled');
-            plot(x(:,h),z(:,h),'b-');
+% h=2;
+scatter(x(:,:),z(:,:),15,'bo','filled');
+for i=1:settings.N
+    if i~=Ideal
+        plot(x(:,i),z(:,i),'b-');
+    else
+        plot(x(:,i),z(:,i),'g-');
     end
+    scatter(Xb{i}(:,1),Xb{i}(:,3),15,'ro','filled');
+end
+
+for h=lf-20:lf%size(x,1)
+    plot([x(h,Ideal),x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h))/2],[z(h,Ideal),z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h))/2],'r--');
+    plot([x(h,Ideal)+10*ds(h-1)*sin(pi/2+2*pi-theta(h)),x(h,Ideal)+10*ds(h-1)*sin(2*pi-theta(h)+(3/2)*pi)],[z(h,Ideal)+10*ds(h-1)*cos(pi/2+2*pi-theta(h)),z(h,Ideal)+10*ds(h-1)*cos(2*pi-theta(h)+(3/2)*pi)],'k--');
+end
+% plot([x(h,Ideal),x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h))/2],[z(h,Ideal),z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h))/2],'r--');
+% plot([x(h,Ideal)+ds(h-1)*sin(pi/2+2*pi-theta(h))/2,x(h,Ideal)+ds(h-1)*sin(2*pi-theta(h)+(3/2)*pi)/2],[z(h,Ideal)+ds(h-1)*cos(pi/2+2*pi-theta(h))/2,z(h,Ideal)+ds(h-1)*cos(2*pi-theta(h)+(3/2)*pi)/2],'k--');
+
+
+
+% 
+%     for h=1:settings.N
+%             scatter(Xrt{h}(:,1),Xrt{h}(:,3),15,'ro','filled');
+%             plot(x(:,h),z(:,h),'b-');
+%     end
 legend('ideal','other','longitudanl axes','trasversal axes','interpolate data','data');
 
 %save('plot\Dipolo_3T\Trajectory_plot_bk.fig');
 return;
 
 %% Plot spread particle in x,y
-grid on; box on;hold on;axis equal; title('Trasversal plane');xlabel('x[m]'); ylabel('y[m]');
-plot(x1(1,:),y1(1,:),'o','DisplayName','At begging');
-plot(x1(l,:),y1(l,:),'x','DisplayName','After Magnet'); 
+grid on; box on;hold on;Mt
+title('Trasversal plane');xlabel('x[mm]'); ylabel('y[mm]');
+plot(x1(1,:)*10^3,y1(1,:)*10^3,'o','DisplayName','At begging');
+plot(x1(lf,:)*10^3,y1(lf,:)*10^3,'x','DisplayName','After Magnet');  
 legend;
-
-%return;
+%% Plot spread particle in x,y
+grid on; box on;hold on; title('Trasversal plane');xlabel('x[m]'); ylabel('y[m]');
+plot(x(l0,:)-xy,y(l0,:),'o','DisplayName','At begging');
+plot(x(l4,:),y(l4,:),'x','DisplayName','After Magnet');  
+legend;
 %% Read the opera's file with the tracking
 
 fid=fopen('Test_Track1_430.csv','r');
@@ -88,6 +102,7 @@ step_op=[];
 for i=1:j(1)
 step_op(i)=sqrt(x_op(i)^2+y_op(i)^2+z_op(i)^2);
 end
+
 x_tr=interp1(z(:,Ideal),x(:,Ideal),z_op(1:j(1)),'spline');
 y_tr=interp1(z(:,Ideal),y(:,Ideal),z_op(1:j(1)),'spline');
 diff=[(x_tr-x_op(1:j(1))),(y_tr-y_op(1:j(1)))];

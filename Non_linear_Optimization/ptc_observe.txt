@@ -1,0 +1,2 @@
+ptc_observe, place=s0;
+ptc_observe, place=send;

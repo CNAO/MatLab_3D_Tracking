@@ -2,7 +2,7 @@ clc, clear, close all;
 
 global set;
 
-load('../Output_Matrix/matrix.mat');
+load('../Output_Matrix/matrix_2_5_1.mat');
 set.MX_mad_mid_minus40cm = M{1}(1:2,1:2);
 set.MY_mad_mid_minus40cm = M{1}(3:4,3:4);
 
@@ -22,41 +22,41 @@ set.MX_mad_end = M{6}(1:2,1:2);
 set.MY_mad_end = M{6}(3:4,3:4);
 
 % Matrix normalization to set det(M) = 1
-set.MX_mad_end = set.MX_mad_end/(det(set.MX_mad_end)^(1/2));
-set.MY_mad_end = set.MY_mad_end/(det(set.MY_mad_end)^(1/2));
-set.MX_mad_mid = set.MX_mad_mid/(det(set.MX_mad_mid)^(1/2));
-set.MY_mad_mid = set.MY_mad_mid/(det(set.MY_mad_mid)^(1/2));
-set.MX_mad_mid_minus20cm = set.MX_mad_mid_minus20cm/(det(set.MX_mad_mid_minus20cm)^(1/2));
-set.MY_mad_mid_minus20cm = set.MY_mad_mid_minus20cm/(det(set.MY_mad_mid_minus20cm)^(1/2));
-set.MX_mad_mid_plus20cm = set.MX_mad_mid_plus20cm/(det(set.MX_mad_mid_plus20cm)^(1/2));
-set.MY_mad_mid_plus20cm = set.MY_mad_mid_plus20cm/(det(set.MY_mad_mid_plus20cm)^(1/2));
-set.MX_mad_mid_minus40cm = set.MX_mad_mid_minus40cm/(det(set.MX_mad_mid_minus40cm)^(1/2));
-set.MY_mad_mid_minus40cm = set.MY_mad_mid_minus40cm/(det(set.MY_mad_mid_minus40cm)^(1/2));
-set.MX_mad_mid_plus40cm = set.MX_mad_mid_plus40cm/(det(set.MX_mad_mid_plus40cm)^(1/2));
-set.MY_mad_mid_plus40cm = set.MY_mad_mid_plus40cm/(det(set.MY_mad_mid_plus40cm)^(1/2));
+% set.MX_mad_end = set.MX_mad_end/(det(set.MX_mad_end)^(1/2));
+% set.MY_mad_end = set.MY_mad_end/(det(set.MY_mad_end)^(1/2));
+% set.MX_mad_mid = set.MX_mad_mid/(det(set.MX_mad_mid)^(1/2));
+% set.MY_mad_mid = set.MY_mad_mid/(det(set.MY_mad_mid)^(1/2));
+% set.MX_mad_mid_minus20cm = set.MX_mad_mid_minus20cm/(det(set.MX_mad_mid_minus20cm)^(1/2));
+% set.MY_mad_mid_minus20cm = set.MY_mad_mid_minus20cm/(det(set.MY_mad_mid_minus20cm)^(1/2));
+% set.MX_mad_mid_plus20cm = set.MX_mad_mid_plus20cm/(det(set.MX_mad_mid_plus20cm)^(1/2));
+% set.MY_mad_mid_plus20cm = set.MY_mad_mid_plus20cm/(det(set.MY_mad_mid_plus20cm)^(1/2));
+% set.MX_mad_mid_minus40cm = set.MX_mad_mid_minus40cm/(det(set.MX_mad_mid_minus40cm)^(1/2));
+% set.MY_mad_mid_minus40cm = set.MY_mad_mid_minus40cm/(det(set.MY_mad_mid_minus40cm)^(1/2));
+% set.MX_mad_mid_plus40cm = set.MX_mad_mid_plus40cm/(det(set.MX_mad_mid_plus40cm)^(1/2));
+% set.MY_mad_mid_plus40cm = set.MY_mad_mid_plus40cm/(det(set.MY_mad_mid_plus40cm)^(1/2));
 
 % set.theta = pi/4;
-set.theta = 45.000373341639474*pi/180;
+set.theta = 45.06*pi/180;
 Br = 6.150376945046179;     % Equivalent to En=377.132 MeV/n
 % set.R = Br/4; 
 
 
 set.F= true; %set.F==true if the dipole is focussing in X, set.F==false if defocusing on X
 
-l1 = 0.1;
+l1 = 0.22;
 % l2 = 0.0;
-phi_x= 0.2;
-phi_y= 0.1;
-kd = 0.126;
+phi_x= -0;
+phi_y= -0;
+kd = -0.0126;
 R = 1.65;
 
 f=@Optimization_Matrix;  
 
-Parameters = [l1,phi_x, phi_y, kd, R];
+Parameters = [l1,kd, R,phi_x, phi_y ];
         
 % Boundaries
-lb =        [0  , -0.4, -0.4, 0.0, 1.3];
-ub =        [0.3,  0.4,  0.4, 0.5, 2.0];
+lb =        [0  ,-0.5, 1.13, -0.4, -0.4 ];
+ub =        [0.3, 0.5, 2.0,  0.4,  0.4];
 
 A = [];
 b = [];
@@ -80,10 +80,10 @@ options =   optimoptions('fmincon', ...
 Matrix_function
 
 l1 = results(1);
-phi_x = results(2);
-phi_y = results(3);
-kd = results(4);
-R = results(5);
+phi_x = results(4);
+phi_y = results(5);
+kd = results(2);
+R = results(3);
 
 % s_tot = 1.329; %total path along s calculated with tracking (G. Frisella)
 % l2 = s_tot-l1-R*set.theta;
@@ -195,3 +195,26 @@ fprintf('Max Error PX mid + 40 cm = %e [rad] \n\n',err(2));
 err = max(abs(set.MY_mad_mid_plus40cm*[Y;PY]-MY_mid_plus40cm*[Y;PY]),[],2);
 fprintf('Max Error Y mid + 40 cm = %e [m] \n',err(1));
 fprintf('Max Error PY mid + 40 cm = %e [rad] \n\n',err(2));
+return
+%%
+r=[2.5,5,7.5,10,12.5,15]*sqrt(2);
+i=1;
+fid=fopen('results.txt','w');
+fprintf(fid,"radius [m] \t ldrift[m] \t phi_x [rad] \t phi_y [rad] \t kd [1/m^2] \t R[m]\n")
+fprintf(fid,"%f \t %f \t %f \t %f \t %f \t %f\n",r(i),results)
+fclose(fid);
+%%
+r=[2.5,5,7.5,10,12.5,15]*sqrt(2);
+Mii=[MX_end(1,1:2),MX_end(2,1:2),MY_end(1,1:2),MY_end(2,1:2)];
+filename='results.txt';
+S = readlines(filename);
+fileID=fopen(filename,'w');
+i=1;
+while i<length(S)
+    fprintf(fileID,S(i));
+    fprintf(fileID,'\n');
+    i=i+1;
+end
+%fprintf(fileID,"M11 \t M12 \t M21 \t M22 \t M33 \t M34 \t M43 \t M44 \n");
+fprintf(fileID,"%f \t %f \t %f \t %f \t %f \t %f \t %f \t %f \t %f\n",r(i-9),Mii);
+fclose(fileID);
