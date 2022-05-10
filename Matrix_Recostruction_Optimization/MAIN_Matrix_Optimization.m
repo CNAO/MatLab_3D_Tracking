@@ -2,7 +2,7 @@ clc, clear, close all;
 
 global set;
 
-load('../Output_Matrix/matrix_2_5_1.mat');
+load('./Output_Matrix/matrix_L15mm_n7.mat');
 set.MX_mad_mid_minus40cm = M{1}(1:2,1:2);
 set.MY_mad_mid_minus40cm = M{1}(3:4,3:4);
 
@@ -35,16 +35,11 @@ set.MY_mad_end = M{6}(3:4,3:4);
 % set.MX_mad_mid_plus40cm = set.MX_mad_mid_plus40cm/(det(set.MX_mad_mid_plus40cm)^(1/2));
 % set.MY_mad_mid_plus40cm = set.MY_mad_mid_plus40cm/(det(set.MY_mad_mid_plus40cm)^(1/2));
 
-% set.theta = pi/4;
-set.theta = 45.06*pi/180;
-Br = 6.150376945046179;     % Equivalent to En=377.132 MeV/n
-% set.R = Br/4; 
+set.theta = 45*pi/180;
 
+set.F= true; %set.F=true if the dipole is focusing in X, set.F=false if defocusing on X
 
-set.F= true; %set.F==true if the dipole is focussing in X, set.F==false if defocusing on X
-
-l1 = 0.22;
-% l2 = 0.0;
+l1 = 0.22; %l1=l2 symmetric drifts
 phi_x= -0;
 phi_y= -0;
 kd = -0.0126;
@@ -55,8 +50,8 @@ f=@Optimization_Matrix;
 Parameters = [l1,kd, R,phi_x, phi_y ];
         
 % Boundaries
-lb =        [0  ,-0.5, 1.13, -0.4, -0.4 ];
-ub =        [0.3, 0.5, 2.0,  0.4,  0.4];
+lb =        [0  ,-0.5, 1.6, -0.4, -0.4 ];
+ub =        [0.3, 0.5, 1.8,  0.4,  0.4];
 
 A = [];
 b = [];
@@ -64,12 +59,12 @@ Aeq = [];
 beq = [];
 
 options =   optimoptions('fmincon', ...
-            'DiffMinChange', 1.0E-16, ... 
-            'TolFun', 1.0E-16, ...
-            'TolX', 1.0E-16, ...
-            'ConstraintTolerance', 1.0E-16, ...
-            'OptimalityTolerance', 1.0E-16, ...
-            'StepTolerance',  1.0E-16, ...
+            'DiffMinChange', 1.0E-8, ... 
+            'TolFun', 1.0E-8, ...
+            'TolX', 1.0E-8, ...
+            'ConstraintTolerance', 1.0E-8, ...
+            'OptimalityTolerance', 1.0E-8, ...
+            'StepTolerance',  1.0E-8, ...
             'Algorithm', 'interior-point', ...
             'PlotFcn',@optimplotfval);
         
@@ -133,8 +128,8 @@ Rx = set.MX_mad_end-MX_end;
 Ry = set.MY_mad_end-MY_end;
 
 %% Residual errors on particles
-x = linspace(-7.5E-3, 7.5E-3, 7);
-y = linspace(-7.5E-3, 7.5E-3, 7);
+x = linspace(-15E-3, 15E-3, 7);
+y = linspace(-15E-3, 15E-3, 7);
 px = linspace(-1E-3, 1E-3, 7);
 py = linspace(-1E-3, 1E-3, 7);
 
@@ -150,7 +145,7 @@ PY = reshape(PY,1,[]);
 err = max(abs(set.MX_mad_end*[X;PX]-MX_end*[X;PX]),[],2);
 fprintf('Max Error X end = %e [m] \n',err(1));
 fprintf('Max Error PX end = %e [rad] \n\n',err(2));
-err = max(abs(set.MY_mad_end*[X;PX]-MY_end*[X;PX]),[],2);
+err = max(abs(set.MY_mad_end*[Y;PY]-MY_end*[Y;PY]),[],2);
 fprintf('Max Error Y end = %e [m] \n',err(1));
 fprintf('Max Error PY end = %e [rad] \n\n',err(2));
 

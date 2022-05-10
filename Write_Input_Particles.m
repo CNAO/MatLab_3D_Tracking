@@ -3,7 +3,7 @@
 clear;clc;
 %% In case you want to do all the tracking in the magnet 
 var=0;
-if var==1
+if var==0
     % Reading from a previous tracking and output file 
     fid= fopen(['Output_Particles\Global_Output.csv'],'r');
     readFormat = '%f, %f, %f, %f, %f, %f, %f, %f';
@@ -22,16 +22,16 @@ else
 end
 %% Beam input file
 
-n=5;
-l=5*1e-3;%15*1e-3; %7.5 mm
+n=7;
+l=15*1e-3;%15*1e-3; %7.5 mm
 p=1*1e-3;%1e-3; %1 mrad
 x=linspace(l,-l,n)';
 y=linspace(l,-l, n)';
 px=linspace(-p,+p,n)';
 py=linspace(-p,+p,n)';
 n=n^4;
-fileID = fopen(['Input_Particles\Particletot.csv'],'w');
-En=linspace(430,430,n);
+fileID = fopen('Input_Particles\Particletot_15mm.csv','w');
+En=linspace(4.342275833712197e+02,4.342275833712197e+02,n);
 id=linspace(1,n,n);
 s=1;
 fprintf(fileID, 'X[m],pX,Y[m],pY,Theta[rad],Phi[rad],Id,En[MeV],Xideal[m],Yideal[m],Zideal[m]\n');

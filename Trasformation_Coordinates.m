@@ -76,9 +76,10 @@ lnew=find(step(:)>1.65*5*pi/180,1);
 lf=size(x,1); % end of the field map
 
 %% Cycle for
-% Dt=[l0,l0+1,l1-1:l1,l2-1:l2,lm-1:lm,l3-1:l3,l4-1:l4,lf-1:lf];
-Dt=[l0:l0+1,lnew-1:lnew,lf-1:lf];
-% Dt=linspace(1,size(x,1),size(x,1));
+% Dt=[l0,l0+1,l1-1:l1,l2-1:l2,lm-1:lm,l3-1:l3,l4-1:l4,lf-1:lf]; %for defined time step (+1 20 and 40 cm) used for matrix optimization
+Dt=[lm-1:lm,lf-1:lf]; 
+% Dt=[l0:l0+1,lnew-1:lnew,lf-1:lf]; %few time step with central part
+% Dt=linspace(1,size(x,1),size(x,1)); %for every time step
 j=1;
 while j<size(Dt,2)+1
     t=Dt(j);
@@ -142,8 +143,8 @@ return;
 % Extrapolation parameters by Mt to built model matrix
 [Mt_model,k]=ModelMatrixBuilder(Mt,l0,lf-1,step);
 % Plot section
-%Plot_matrix_abs_err(1,X0,Xf,Mt);
-%Plot_matrix_abs_err(1,X0,Xf,Mt_model);
+Plot_matrix_abs_err(1,X0,Xf,Mt);
+Plot_matrix_abs_err(1,X0,Xf,Mt_model);
 
 %% Output file with Matrix linear extrapolation
 % Write an output file in the directory called "Matrix_output" in wich
@@ -156,7 +157,7 @@ for i=1:size(time,2) %i goes from 1 to the number of the topic points
     M{i}=Mt;
 end
 
-save('Output_Matrix/matrix_6.mat', 'M');
+save('Output_Matrix/matrix_L15mm_n7.mat', 'M');
 
 %% Output file with Matrix third order
 % Write an output file in the directory called "Matrix_output" in wich
@@ -227,12 +228,12 @@ return;
 
 
 %% Write output coordinates in a csv file
-type=1; %Type=1 write output in local coordinates else in global coordinates
-Write_Output_Particles(X_local,p_local,phi,theta,l0,Ideal,320.2,settings.N,x,y,z,type);
+type=1; %Type=1 write output in local coordinates (of all particles - Non Linear Matrix optimization)
+% else in global coordinates (only the ideal particle - for back tracking)
 %%
-Write_Output_Particles(X_local,p_local,phi,theta,lm,Ideal,320.2,settings.N,x,y,z,type);
+Write_Output_Particles(X_local,p_local,phi,theta,lm,Ideal,434.22758,settings.N,x,y,z,type);
 %%
-Write_Output_Particles(X_local,p_local,phi,theta,lf,Ideal,320.2,settings.N,x,y,z,type);
+Write_Output_Particles(X_local,p_local,phi,theta,lf,Ideal,434.22758,settings.N,x,y,z,type);
 
 
 

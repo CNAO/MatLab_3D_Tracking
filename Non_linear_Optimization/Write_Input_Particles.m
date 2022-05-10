@@ -1,15 +1,15 @@
  clear;clc;
 %% In case you want to do all the tracking in the magnet 
 
-n=5;
-l=2.5*1e-3; %1 mm
+n=7;
+l=15*1e-3; %1 mm
 p=1e-3; %1 mrad
 x=linspace(-l,l,n)';
 y=linspace(l,-l, n)';
 px=linspace(-p,+p,n)';
 py=linspace(p,-p,n)';
 n=n^4;
-fileID = fopen(['Input_Particles.csv'],'w');
+fileID = fopen(['Input_Particles_15mm_n7.csv'],'w');
 for b=1:size(py,1)
     for k=1:size(y,1)
         for j=1:size(px,1)

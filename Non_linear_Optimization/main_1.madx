@@ -4,26 +4,25 @@ option, echo, info;
 
 
 !Dipole
-rho:=2.203;  // 3Tesla
-slopedAng :=30/180.0*pi;
+rho:=1.667662501047104;
+slopedAng :=45/180.0*pi;
 lmbup:=SlopedAng*rho;
-k:=-0.7405;
-l_drift :=0.2731;
-ks1:=0.000000;
-ks2:=0.000000;
-ks3:=0.000000;
+k:=0.012481065237371 ;
+l_drift := 0.194306940341203;
+kl1:=0.000000;
+kl2:=-0.990000;
+kl3:=0.000000;
+kl4:=0.000000;
+ksex:=-0.990001;
 
+gap = 80E-3;
+I1 = rho*(phi_x-phi_y)/(gap*(1+sin(phi_x)^2));
 
-psi:=-0.0267;
-psi_b:=-0.038;
-I1:=(psi-psi_b)/(1+(sin(psi)^2));
-
-!! Element definition !!
-mpole1: MULTIPOLE, KNL:={0,0,ks2,0,0};
-mpole2: MULTIPOLE, KNL:={0,0,ks1,0,0};
-mpole3: MULTIPOLE, KNL:={0,0,ks3,0,0};
-mbup: SBEND, l:=lmbup/2, angle:=slopedAng/2, k1:=k; //negative angle!
-edge: DIPEDGE, H:=1/rho, E1:=psi, FINT:=I1/70e-3, HGAP:=70*1e-3;
+mpole1: MULTIPOLE, KNL:={0,ks1,ks2,0,0};
+!mpole2: MULTIPOLE, KNL:={0,0,ks1,0,0};
+!mpole3: MULTIPOLE, KNL:={0,0,ks3,0,0};
+mbup: SBEND, l:=lmbup/2, angle:=slopedAng/2, k1:=k, k2:=ks3; //negative angle!
+edge: DIPEDGE, H:=1/rho, E1:=phi_x, FINT:=I1, HGAP:=gap/2;
 
 !! Sequence definition !!
 l_seq:=l_drift+lmbup+l_drift;
@@ -31,22 +30,20 @@ seq1: sequence, refer=center, l:=l_seq;
 !s0: marker, at=0;
 mpole1: mpole1, at=l_drift;
 edge1: edge, at=l_drift;
-mbup1: mbup, at=lmbup/4,from=edge1;
-mpole2: mpole2, at=l_seq/2;
+mbup1: mbup, at=lmbup/4,from=mpole1;
+!mpole2: mpole2, at=l_seq/2;
 s0: marker, at=l_seq/2;
 mbup2: mbup, at=lmbup/2,from=mbup1;
 edge2: edge, at=lmbup/4, from=mbup2;
-mpole3: mpole3, at=lmbup/4, from=mbup2;
+mpole3: mpole1, at=lmbup/4, from=mbup2;
 send: marker, at=l_seq;
 endsequence;
 
 BEAM;
 USE,sequence=seq1;
-
 !! TWISS !!
 Twiss,chrom=true,rmatrix=true, save,file=twiss.txt,  BETX=10, BETY=10, ALFX=1, ALFY=1;
 plot,table=twiss, title ='plot',interpolate=true, haxis=s, vaxis1=betx, bety, colour=100;
-
 select,flag=twiss,column=name,keyword,l,s,re11,re12,re21,re22,re16,re26,re33,re34,re43,re44,re36,re46,re51,re52,re55,re56,re66;
 twiss, rmatrix=true, file='twiss_matrix.txt', BETX=10, BETY=10, ALFX=1, ALFY=1;
 
@@ -64,7 +61,7 @@ alfx= alfaxin, alfy=alfayin, dx=dxin, dpx=dpxin, dy=dyin, dpy=dpyin, mux=muxin, 
 */
 
 !-------------PTC_TRACK------------------------------------------------
-call,file="Input_Particles.csv";
+call,file="Input_Particles_15mm_n7.csv";
 call,file="ptc_observe.txt";
 ptc_track,deltap=deltapin,icase=4,element_by_element, dump, onetable,maxaper={1,1,1,1,1,1}, file="PTC_track0.txt", ffile=1;
 ptc_track_end;

@@ -1,6 +1,10 @@
 *.cvs
 *.asv
 *.mat
+*.txt
+*.ps
+*.txtone
+*.csv
 Field/
 Output_Particles/
 Input_Particles/
