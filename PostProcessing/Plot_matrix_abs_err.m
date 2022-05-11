@@ -3,6 +3,10 @@ function [] = Plot_matrix_abs_err(id,X0,XF,Mt)
 XF1=(Mt*X0); %Local coordinates vector from Trasport Matrix
 R=XF1-XF; %Absolute error due to the linearization of the system
 
+
+figure; hold on;
+plot(XF(1,:),XF(3,:),'ko');
+plot(XF1(1,:),XF1(3,:),'rx');
 % Evalutation of the model
 % 
 % X_f=Mt_th*X0;
@@ -19,8 +23,11 @@ plot(X0(id,:),abs(R(id,:)),"x");
 
 xfit=X0(id,:);
 yfit=X0(id+2,:);
-Rfit=R(id,:);
-figure;stem3(xfit,yfit,(Rfit));
+Rfitx=R(id,:);
+Rfity=R(id+2,:);
+figure;stem3(xfit,yfit,(Rfitx)); title('Residual in X');
+figure;stem3(xfit,yfit,(Rfity)); title('Residual in Y');
+
 return
 %% R1 plot
 %Relative percentage difference between the local vector of the tracking coordinates and the one reconstructed from the transport matrix 

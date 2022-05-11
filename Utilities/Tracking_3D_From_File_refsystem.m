@@ -25,7 +25,7 @@ X00=[temp{9} temp{10} temp{11}]; %x,y,z global coordinate of ideal particle [m]
 phi = temp{6};     %azimuthal angle [rad]
 theta = temp{5};   %polar angle [rad]
 
-E_k= settings.A_n*temp{8};            %beam kinetic energy [MeV]
+settings.E_k= settings.A_n*temp{8};           %beam kinetic energy [MeV]
 
 settings.N = length(settings.ID);    %number of particles 
 
@@ -33,7 +33,7 @@ settings.N = length(settings.ID);    %number of particles
 
 %Calculation of the total energy [MeV]
 E0 = m0*c^2 /eV_J /1e6;                         %Rest Energy: E0[eV] = mc^2 * (1eV / 1.602e-19 J) * (1MeV / 1e6 eV)
-Etot_k = E0 + E_k;
+Etot_k = E0 + settings.E_k;
 
 %Calculation of the Momentum [MeV/c]            %Etot^2 = (mc^2)^2 + (Pc)^2 = E0^2 + (Pc)^2
 P_k = sqrt(Etot_k.^2-E0^2); 
@@ -46,6 +46,7 @@ settings.qom = (q./(Gamma_k.*m0));               % Charge over mass
 v_k = c*sqrt(1-1./(Gamma_k.^2));
 settings.Br = P_k * 1e6 * eV_J / (c*q);
 
+
 %% Rotation Matrix
 t=1;
 Mrx=MatrixRotationBuilder(pi/2-phi(t),1);
@@ -53,11 +54,14 @@ Mry=MatrixRotationBuilder(theta(t),2);
 %% Input velocities - Spherical Coordinates to Cartesian
 
 Vx=v_k.*[ cos(atan(pX(:,2))).*sin(atan(pX(:,1))) sin(atan(pX(:,2))) cos(atan(pX(:,1))).*cos(atan(pX(:,2)))]*sign(q);
-if type==0
-    V1=(Mrx'*Mry'*Vx')';
-else
-    V1=-(Mrx'*Mry'*Vx')';
-end
+V1=(Mrx'*Mry'*Vx')';
+
+% If we have magnet that bent in the oder direction (e.g. Mikko)
+% if type==0
+%     V1=(Mrx'*Mry'*Vx')';
+% else
+%     V1=-(Mrx'*Mry'*Vx')';
+% end
 
 
 %% Input coordiantes
@@ -72,7 +76,7 @@ X0 = [X1(:,1);X1(:,2);X1(:,3);V1(:,1);V1(:,2);V1(:,3)].';
 
 % Set the simulation end time (distance/velocity)
 
-tend=(0.75)/min(v_k);
+tend=(0.85)/min(v_k);
 
 if q<0
     tend =2*tend; 
@@ -82,13 +86,15 @@ end
 %event = @(t,X)myEvent(X,settings);
 
 % Setting the precision for the solver
-opts = odeset('AbsTol',1e-7,'RelTol',1e-7,'InitialStep',(1E-3)/max(v_k));       
+opts = odeset('AbsTol',1e-9,'RelTol',1e-9,'InitialStep',(1E-3)/max(v_k));       
 %opts = odeset('AbsTol',1e-6,'RelTol',1e-6,'InitialStep',(1E-3)/max(v_k),'Events', event);        
 
 fun = @(t,X)Motion_Eq(t,X,settings);
 
 fprintf('Calculation of the Particle Trajectories . . . \n');
 [t,X] = ode45(fun,[0,tend],X0,opts);
+% [t,X] = ode89(fun,[0,tend],X0,opts); %Runge Kutta at higher order (8th)
+
 fprintf('Calculation of the Particle Trajectories COMPLETED \n');
 
 settings.X = X;
