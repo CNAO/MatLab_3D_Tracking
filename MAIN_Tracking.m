@@ -5,8 +5,8 @@ clc, clear, close all;
 tic
 
 fprintf('Loading Field and create Interpolation Functions ... \n');
-
-folder = 'Field/SIG_48Gradi_OPERA_error/';
+% folder = 'Field/SIG_48Gradi_OPERA_error/';
+folder = 'Field/SIG_0_48mm_45GradiMagnet/BOXDATA/Dati_SIG_36s_0_48mm_c_IronOptimized_3D_f_tot_Tuned_45gradi_202_160_445/';
 fileName = 'BOX.mat';
 
 gridded_data = true; % = TRUE  if we work with gridded data
@@ -36,7 +36,8 @@ end
 
 
 if gridded_data == true
-    nx = 102; ny = 161; nz = 446;  
+%     nx = 102; ny = 161; nz = 446; 
+    nx=202+1; ny=160+1; nz=445+1;
     x = reshape(x,nz,ny,nx); x = permute(x,[3 2 1]);
     y = reshape(y,nz,ny,nx); y = permute(y,[3 2 1]);
     z = reshape(z,nz,ny,nx); z = permute(z,[3 2 1]);
@@ -59,7 +60,7 @@ toc
 %% 3D Tracking
 
 %CVS file with input particles
-part_file_txt = "Input_Particles/Particletot_15mm.csv";
+part_file_txt = "Input_Particles/Particle_SIG_0_n7_15mm.csv";
 
 settings.A_n = 12;   % Mass Number A (number of nucleons)
 settings.Z_n = -6;    % Atomic number Z (number of protons) !Negative value for BACKtracking
@@ -71,14 +72,8 @@ toc
 % return
 %% Post Processing and Plots
 
-
 PostProcessing_Tracking_3D_fInterp
 
-% if type==0
-%     PostProcessing_Tracking_3D;
-% else
-%     PostProcessing_Tracking_3D_2;
-% end
 
 
 

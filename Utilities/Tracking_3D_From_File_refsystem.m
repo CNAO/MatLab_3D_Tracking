@@ -76,7 +76,7 @@ X0 = [X1(:,1);X1(:,2);X1(:,3);V1(:,1);V1(:,2);V1(:,3)].';
 
 % Set the simulation end time (distance/velocity)
 
-tend=(0.85)/min(v_k);
+tend=(0.9)/min(v_k);
 
 if q<0
     tend =2*tend; 

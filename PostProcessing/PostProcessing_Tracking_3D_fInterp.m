@@ -11,12 +11,12 @@ vz = settings.X(:,5*settings.N+1:6*settings.N);
 figure; hold on; grid on; box on; axis equal;
 
 for i=1:settings.N
-    hh(1)=plot3(x(:,i),y(:,i),z(:,i),'b','LineWidth',0.8,'DisplayName','Tracking');
+    hh(1)=plot3(x(:,i),-0.1+y(:,i),z(:,i),'b-','LineWidth',0.8,'DisplayName','Tracking');
 %     hh(2)=plot3(xx2(:,i),zeros(size(xx2,1),1),zz2(:,i),'g','LineWidth',2.5,'DisplayName','Backtracking');
 end
 
 % plot the starting position
-plot3(x(1,:),y(1,:),z(1,:),'g+',LineWidth=2);
+plot3(x(1,:),+y(1,:),z(1,:),'gx',LineWidth=2);
 
 xlabel('x [m]'); 
 ylabel('y [m]'); 
@@ -24,9 +24,8 @@ zlabel('z [m]');
 % view(3)
 
 %particles' exit angle
-settings.th_end=atan((z(end-1,:)-z(end,:))./(x(end-1,:)-x(end,:)))*180/pi;
-
-
+settings.th_end=90-atan((z(end-1,:)-z(end,:))./(x(end-1,:)-x(end,:)))*180/pi;
+% E_k_nominal_nucl = interp1(settings.th_end,settings.E_k,22.5)/settings.A_n;
 %% Plot Field in 3D
 
 %Define plot for point
@@ -41,13 +40,15 @@ YY = permute(YY, P);
 ZZ = permute(ZZ, P);
 
 % figure;
-[h] = fscatter3(XX,YY,ZZ,abs(settings.fBy(XX,YY,ZZ)),flipud(hot));
+[h] = fscatter3(XX,YY,ZZ,(settings.fBy(XX,YY,ZZ)),flipud(hot));
 
 xlabel('x [m]'); ylabel('y [m]'); zlabel('z [m]');
 axis equal; box on;
 c = colorbar('EastOutside'); 
 c.Label.String = 'By [T]'; c.Label.FontSize = 14;
-view(180,0);
+view(0,0);
+
+return;
 
 %% Calculating Field along the trajectory of the N-th particle
 

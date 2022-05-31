@@ -5,7 +5,7 @@ clear;clc;
 var=0;
 if var==0
     % Reading from a previous tracking and output file 
-    fid= fopen(['Output_Particles\Global_Output.csv'],'r');
+    fid= fopen(['Output_Particles\Global_Output_SIG_0_48mm_45Gradi.csv'],'r');
     readFormat = '%f, %f, %f, %f, %f, %f, %f, %f';
     temp = textscan(fid,readFormat,'HeaderLines',1);
     fclose(fid);
@@ -30,8 +30,10 @@ y=linspace(l,-l, n)';
 px=linspace(-p,+p,n)';
 py=linspace(-p,+p,n)';
 n=n^4;
-fileID = fopen('Input_Particles\Particletot_15mm.csv','w');
-En=linspace(4.342275833712197e+02,4.342275833712197e+02,n);
+fileID = fopen('Input_Particles\Particle_SIG_0_n7_15mm.csv','w');
+% En=linspace(4.342275833712197e+02,4.342275833712197e+02,n);
+En=linspace(428.4945,428.4945,n);
+
 id=linspace(1,n,n);
 s=1;
 fprintf(fileID, 'X[m],pX,Y[m],pY,Theta[rad],Phi[rad],Id,En[MeV],Xideal[m],Yideal[m],Zideal[m]\n');

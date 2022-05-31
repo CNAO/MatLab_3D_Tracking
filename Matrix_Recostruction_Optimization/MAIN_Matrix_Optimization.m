@@ -2,7 +2,7 @@ clc, clear, close all;
 
 global set;
 
-load('./Output_Matrix/matrix_L15mm_n7.mat');
+load('./Output_Matrix/matrix_SIG_0_48mm_45Gradi_n7_15mm.mat');
 set.MX_mad_mid_minus40cm = M{1}(1:2,1:2);
 set.MY_mad_mid_minus40cm = M{1}(3:4,3:4);
 
@@ -192,11 +192,11 @@ fprintf('Max Error Y mid + 40 cm = %e [m] \n',err(1));
 fprintf('Max Error PY mid + 40 cm = %e [rad] \n\n',err(2));
 return
 %%
-r=[2.5,5,7.5,10,12.5,15]*sqrt(2);
-i=1;
-fid=fopen('results.txt','w');
-fprintf(fid,"radius [m] \t ldrift[m] \t phi_x [rad] \t phi_y [rad] \t kd [1/m^2] \t R[m]\n")
-fprintf(fid,"%f \t %f \t %f \t %f \t %f \t %f\n",r(i),results)
+beam_r=15*sqrt(2);
+
+fid=fopen('Results_SIG_0_48mm_45Gradi_n7_15mm.txt','w');
+fprintf(fid,"beam radius [m] \t ldrift[m] \t kd [1/m^2] \t R[m] \t\t phi_x [rad] \t phi_y [rad]\n")
+fprintf(fid,"%f \t \t %f \t %f \t %f \t %f \t %f\n",beam_r,results)
 fclose(fid);
 %%
 r=[2.5,5,7.5,10,12.5,15]*sqrt(2);
