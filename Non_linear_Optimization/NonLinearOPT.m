@@ -1,18 +1,20 @@
-function diff = Optimization(Parameters)
+function diff = NonLinearOPT(Parameters)
+
+global diff_old;
 
 % Read the output file of tracking
-fid=fopen(['..\Output_Particles\Local_Output_lf_L15mm_n7.csv'],'r');
+fid=fopen(['..\Output_Particles\Local_Output_LF_SIG_0_48mm_45Gradi_n7_15mm.csv'],'r');
 readFormat = '%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f';
 temp = textscan(fid,readFormat,'HeaderLines',1);
 fclose(fid);
 % Phase space vector of final local coordinates of tracking particles
 Xf=[temp{1}, temp{2}, temp{3}, temp{4}];
 
-fid=fopen('..\Output_Particles\Local_Output_lm_L15mm_n7.csv','r');
+fid=fopen('..\Output_Particles\Local_Output_LM_SIG_0_48mm_45Gradi_n7_15mm.csv','r');
 readFormat = '%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f';
 temp = textscan(fid,readFormat,'HeaderLines',1);
 fclose(fid);
-% Phase space vector of final local coordinates of tracking particles
+% Phase space vector of middle local coordinates of tracking particles
 Xm=[temp{1}, temp{2}, temp{3}, temp{4}];
 
 %% Parameters assignation
@@ -39,10 +41,24 @@ end
 [Xf_t,Xm_t]=Load_Final_Vector();
 % Compare the two vector (absolute error)
 R_f=Xf-Xf_t;
-diff_f=max(abs(R_f))
-diff_f=max(diff_f)
+diff_f=max(abs(R_f));
+sum_diff_f=sum(diff_f);
 R_m=Xm-Xm_t;
-diff_m=max(abs(R_m))
-diff_m=max(diff_m)
-diff=(diff_m)+5*(diff_f);
+diff_m=max(abs(R_m));
+sum_diff_m=sum(diff_m);
+diff= 0*(sum_diff_m)+(sum_diff_f);
+
+%% Save results
+if diff<diff_old 
+    diff_old=diff;
+    fprintf('The parameters are %4.8f \n', Parameters);
+    fprintf('Final sum differences are %4.5e \n', diff_f);
+    fprintf('Final sum difference is %4.5e \n', sum_diff_f);
+    fprintf('Middle sum difference is %4.5e \n \n', sum_diff_m);
+
+%     fprintf('Middle sum differences are %4.5f \n', diff_m);
+
+    save('Results_SIG_0_48mm_45Gradi_n7_15mm.mat', 'Parameters', 'diff_f', 'diff_m');
+end
+
 
