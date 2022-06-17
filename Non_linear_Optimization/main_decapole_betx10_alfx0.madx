@@ -1,0 +1,69 @@
+!EOPTION, seed=12, add=FALSE;
+!ASSIGN, echo="output.out";
+option, -echo, -info;
+
+
+!Dipole
+rho:=1.649852 ;
+slopedAng := -45/180.0*pi;
+lmbup:=abs(SlopedAng)*rho;
+k:=0.018845 ;
+l_drift := 0.252116;
+kl1:=0.000123;
+kl2:=-3.342555;
+kl3:=-0.020098;
+kl4:=-1.692560;
+ksex:=1.052403;
+
+
+phi_x =   0.010852;
+phi_y = -0.007089;
+gap = 80E-3;
+I1 = rho*(phi_x-phi_y)/(gap*(1+sin(phi_x)^2));
+
+mpole1: MULTIPOLE, KNL:={0,kl1,kl2,kl3,kl4*1E+4};
+mbup: SBEND, l:=lmbup/2, angle:=slopedAng/2, k1:=k, k2:=ksex; //negative angle!
+edge: DIPEDGE, H:=1/rho, E1:=phi_x, FINT:=I1, HGAP:=gap/2;
+
+!! Sequence definition !!
+l_seq:=l_drift+lmbup+l_drift;
+seq1: sequence, refer=center, l:=l_seq;
+!s0: marker, at=0;
+mpole1: mpole1, at=l_drift;
+edge1: edge, at=l_drift;
+mbup1: mbup, at=lmbup/4,from=mpole1;
+!mpole2: mpole2, at=l_seq/2;
+s0: marker, at=l_seq/2;
+mbup2: mbup, at=lmbup/2,from=mbup1;
+edge2: edge, at=lmbup/4, from=mbup2;
+mpole3: mpole1, at=lmbup/4, from=mbup2;
+send: marker, at=l_seq;
+endsequence;
+
+BEAM, particle=positron;
+USE,sequence=seq1;
+!! TWISS !!
+Twiss,chrom=true,rmatrix=true, save,file=twiss.txt,  BETX=10, BETY=10, ALFX=1, ALFY=1;
+plot,table=twiss, title ='plot',interpolate=true, haxis=s, vaxis1=betx, bety, colour=100;
+select,flag=twiss,column=name,keyword,l,s,re11,re12,re21,re22,re16,re26,re33,re34,re43,re44,re36,re46,re51,re52,re55,re56,re66;
+twiss, rmatrix=true, file='twiss_matrix.txt', BETX=10, BETY=10, ALFX=1, ALFY=1;
+
+!--------------inizializzazione-----------------------------------
+ptc_create_universe;
+ptc_create_layout, model=2, method=6, nst=1000, exact=false, closed_layout=false;
+ptc_align;
+
+/*
+!--------------PTC_TWISS-------------------------------------------
+SELECT, flag=ptc_twiss, clear;
+select,flag=ptc_twiss,column=name, s, beta11, alfa11, beta22, alfa22, disp1, disp2,disp3, disp4, beta11p, alfa11p, beta22p, alfa22p, disp1p, disp2p,disp3p, disp4p, x, px, y, py;
+ptc_twiss, icase=5, no=2, file="PTC_twiss0.txt", norm_no=1, Deltap=deltapin, betx=betaxin, bety=betayin,
+alfx= alfaxin, alfy=alfayin, dx=dxin, dpx=dpxin, dy=dyin, dpy=dpyin, mux=muxin, muy=muyin, x=xin, px=pxin, y=yin, py=pyin;
+*/
+
+!-------------PTC_TRACK------------------------------------------------
+call,file="IN_part_SIG_0_bx10_ax0_1000.csv";
+call,file="ptc_observe.txt";
+ptc_track,deltap=deltapin,icase=4,element_by_element, dump, onetable,maxaper={1,1,1,1,1,1}, file="PTC_track0.txt", ffile=1;
+ptc_track_end;
+ptc_end;

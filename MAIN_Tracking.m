@@ -60,7 +60,8 @@ toc
 %% 3D Tracking
 
 %CVS file with input particles
-part_file_txt = "Input_Particles/Particle_SIG_0_n7_15mm.csv";
+part_file_txt = "Input_Particles/Particle_SIG_0_gauss_bx10_ax0_1000.csv";
+% part_file_txt = "Input_Particles/Particle_SIG_0_n7_15mm.csv";
 
 settings.A_n = 12;   % Mass Number A (number of nucleons)
 settings.Z_n = -6;    % Atomic number Z (number of protons) !Negative value for BACKtracking
