@@ -10,13 +10,13 @@ vz = settings.X(:,5*settings.N+1:6*settings.N);
 %% Plot particles
 figure; hold on; grid on; box on; axis equal;
 
-for i=1:settings.N
+for i=1:10:settings.N
     hh(1)=plot3(x(:,i),-0.1+y(:,i),z(:,i),'b-','LineWidth',0.8,'DisplayName','Tracking');
 %     hh(2)=plot3(xx2(:,i),zeros(size(xx2,1),1),zz2(:,i),'g','LineWidth',2.5,'DisplayName','Backtracking');
 end
 
 % plot the starting position
-plot3(x(1,:),+y(1,:),z(1,:),'gx',LineWidth=2);
+% plot3(x(1,:),+y(1,:),z(1,:),'gx',LineWidth=2);
 
 xlabel('x [m]'); 
 ylabel('y [m]'); 
@@ -53,7 +53,7 @@ return;
 %% Calculating Field along the trajectory of the N-th particle
 
 figure; hold on;
-for i=1201 %select the particle 
+for i=1 %select the particle 
     ds = sqrt(diff(x(:,i)).^2+diff(y(:,i)).^2+diff(z(:,i)).^2);
     s=zeros(size(x(:,i)));
     for j=2:length(ds)+1

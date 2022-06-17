@@ -19,21 +19,16 @@ Xm=[temp{1}, temp{2}, temp{3}, temp{4}];
 
 %% Parameters assignation
 
-% ks1 = Parameters(1);
-% ks2= Parameters(2);
-% ks3 = Parameters(3);
-% Write_MADX_mainfile(ks1,ks2,ks3)
-
 kl1 = Parameters(1);
 kl2= Parameters(2);
 kl3 = Parameters(3);
 kl4 = Parameters(4);
 ksex = Parameters(5);
-Write_MADX_mainfile_higher(kl1,kl2,kl3,kl4,ksex)
+filename='main_decapole.madx';
+Write_MADX_mainfile(kl1,kl2,kl3,kl4,ksex,filename)
 
 % Run mad-x
-% [status]=system('madx.exe main_1.madx > nul');
-[status]=system('madx.exe main_decapole.madx > nul');
+[status]=system(['madx.exe ',filename,' > nul']);
 if ( status ~= 0 )
     error("error in running MADX!");
 end
@@ -46,19 +41,19 @@ sum_diff_f=sum(diff_f);
 R_m=Xm-Xm_t;
 diff_m=max(abs(R_m));
 sum_diff_m=sum(diff_m);
-diff= 0*(sum_diff_m)+(sum_diff_f);
+diff= (sum_diff_m)+(sum_diff_f);
 
 %% Save results
 if diff<diff_old 
     diff_old=diff;
     fprintf('The parameters are %4.8f \n', Parameters);
-    fprintf('Final sum differences are %4.5e \n', diff_f);
+    fprintf('Final difference are %4.5e \n', diff_f);
     fprintf('Final sum difference is %4.5e \n', sum_diff_f);
     fprintf('Middle sum difference is %4.5e \n \n', sum_diff_m);
 
 %     fprintf('Middle sum differences are %4.5f \n', diff_m);
 
-    save('Results_SIG_0_48mm_45Gradi_n7_15mm.mat', 'Parameters', 'diff_f', 'diff_m');
+    save('Results_SIG_0_48mm_45Gradi_n7_15mm_v00.mat', 'Parameters', 'diff_f', 'diff_m');
 end
 
 

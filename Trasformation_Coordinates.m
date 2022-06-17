@@ -29,14 +29,16 @@ end
 %% Definition of global variable
 
 %Finding the ideal particle have X=(0,0,0,0) in global system
-for i=1:size(x,2)
-    if y(1,i)==0 && x(1,i)==0 && vx(1,i)==0 && vy(1,i)==0
-        Ideal=i ; %Ideal particle
-        break;
-    else
-        Ideal=fix(size(x,2)/2)+1;
-    end
-end 
+% for i=1:size(x,2)
+%     if y(1,i)==0 && x(1,i)==0 && vx(1,i)==0 && vy(1,i)==0
+%         Ideal=i ; %Ideal particle
+%         break;
+%     else
+%         Ideal=fix(size(x,2)/2)+1;
+%     end
+% end 
+Ideal = 1; %in the beam distribution, the ideal particle is added as first
+
 phi=zeros(1,size(x,1)); %phi is define like the angle between y and xz plane axis in global system (azimutal angle)
 theta=zeros(1,size(x,1));  %theta is define the angle between z and x plane axis in global system (- polar angle)
 Xs=cell(1,settings.N); %coordinates in global system
@@ -75,6 +77,9 @@ l4=find(step(:)>step(lm)+0.4,1); %0.4 cm after half magnet
 lnew=find(step(:)>1.65*5*pi/180,1);
 lf=size(x,1); % end of the field map
 
+% l0 = find(z(:,Ideal)>z(1,Ideal)+0.05,1);
+% lf = find(z(:,Ideal)>z(end,Ideal)-0.05,1);
+
 %% Cycle for
 Dt=[l0,l0+1,l1-1:l1,l2-1:l2,lm-1:lm,l3-1:l3,l4-1:l4,lf-1:lf]; %for defined time step (+1 20 and 40 cm) used for matrix optimization
 % Dt=[lm-1:lm,lf-1:lf]; 
@@ -110,7 +115,7 @@ while j<size(Dt,2)+1
         y1(t,i)=interp1(Xrt{i}(:,3),Xrt{i}(:,2),0*Xrt{Ideal}(t,3),'spline'); 
         
         %Building canonical momentums p(s)=dx/ds
-        if t==1
+        if t==l0
             v1=(Mrx*Mry*[vx(t,i);vy(t,i);vz(t,i)]);
             vx1(i)=v1(1);
             vy1(i)=v1(2);
@@ -123,7 +128,7 @@ while j<size(Dt,2)+1
         end
     end
     %Progress of the cycle for
-    fprintf('Loading of transofrmation %2.2f percent\n',(t/size(x,1))*100);
+    fprintf('Loading of transformation %2.2f percent\n',(t/size(x,1))*100);
     j=j+1;
 end
 toc
@@ -131,8 +136,8 @@ toc
 
 for i=1:settings.N
  %coordinates in local system with interp data
-    X_local{i}=[x1(:,i) y1(:,i),zeros(size(x1,1),1)]; %3 index: i)n° part j)time k) (1=>x,2=>y,3=>z) X{i}(j,k)
-    p_local{i}=[px(:,i) py(:,i)];
+    X_local{i}=[x1(:,i), y1(:,i), zeros(size(x1,1),1)]; %3 index: i)n° part j)time k) (1=>x,2=>y,3=>z) X{i}(j,k)
+    p_local{i}=[px(:,i), py(:,i)];
 end
 return;
 %% Built linear & model transport matrix
@@ -157,7 +162,7 @@ for i=1:size(time,2) %i goes from 1 to the number of the topic points
     M{i}=Mt;
 end
 
-save('Output_Matrix/matrix_SIG_0_48mm_45Gradi_n7_15mm.mat', 'M');
+save('Output_Matrix/matrix_SIG_0_gauss_bx5_ax0_500_0p05.mat', 'M');
 
 %% Output file with Matrix third order
 % Write an output file in the directory called "Matrix_output" in wich
