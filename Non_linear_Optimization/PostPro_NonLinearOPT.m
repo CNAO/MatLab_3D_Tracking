@@ -1,14 +1,12 @@
 %% Post processing of NON-LINEAR optimization
 
 
-clc; clear; close all;
+%clc;
+clear; close all;
 %%
-load('Results_SIG_0_48mm_45Gradi_n7_15mm_v1.mat')
-
-
 
 % Read the output file of tracking
-fid=fopen('..\Output_Particles\Local_Output_LF_SIG_0_48mm_betx10_alfx0_spline_1000.csv','r');
+fid=fopen('..\Output_Particles\Local_Output_lf.csv','r');
 % fid=fopen('..\Output_Particles\Local_Output_LF_SIG_0_48mm_45Gradi_n7_15mm.csv','r');
 % fid=fopen('..\Output_Particles\Local_Output_LF_n7_15mm_v2.csv','r');
 
@@ -18,7 +16,7 @@ fclose(fid);
 % Phase space vector of final local coordinates of tracking particles
 Xf=[temp{1}, temp{2}, temp{3}, temp{4}];
 
-fid=fopen('..\Output_Particles\Local_Output_LM_SIG_0_48mm_betx10_alfx0_spline_1000.csv','r');
+fid=fopen('..\Output_Particles\Local_Output_lm.csv','r');
 % fid=fopen('..\Output_Particles\Local_Output_LM_SIG_0_48mm_45Gradi_n7_15mm.csv','r');
 % fid=fopen('..\Output_Particles\Local_Output_LM_n7_15mm_v2.csv','r');
 
@@ -29,10 +27,14 @@ fclose(fid);
 Xm=[temp{1}, temp{2}, temp{3}, temp{4}];
 
 % Write main program in mad-x in wich change everytime the gradient
-Parameters = Parameters;
-kl1=Parameters(1); kl2=Parameters(2) ;kl3=Parameters(3);kl4=Parameters(4);ksex=Parameters(5);
-filename='main_decapole_betx10_alfx0.madx';
-Write_MADX_mainfile(kl1,kl2,kl3,kl4,ksex,filename)
+load('Results_non_lin.mat')
+Pars=Parameters;
+kl0=Pars(1); kl1=Pars(2); kl2=Pars(3) ;kl3=Pars(4);kl4=Pars(5);ksex=Pars(6);
+load('..\Matrix_Recostruction_Optimization\results.mat');
+init_pars=results;
+filename='main_decapole.madx';
+%kl0=0; kl1=0; kl2=0 ;kl3=0;kl4=0;ksex=0;
+Write_MADX_mainfile(init_pars,kl0,kl1,kl2,kl3,kl4,ksex,filename)
 
 % Run mad-x
 [status]=system(['madx.exe ',filename,' > nul']);
@@ -41,9 +43,9 @@ if ( status ~= 0 )
 end
 % Read output tracking file of mad-x
 [Xf_t,Xm_t]=Load_Final_Vector();
-% Compare the two vector (absolute error)
-% Xf_t = flip(Xf_t);
-% Xm_t = flip(Xm_t);
+%Compare the two vector (absolute error)
+%Xf_t = flip(Xf_t);
+%Xm_t = flip(Xm_t);
 R_f=Xf-Xf_t;
 diff_f=max(abs(R_f));
 
@@ -51,19 +53,22 @@ R_m=Xm-Xm_t;
 diff_m=max(abs(R_m));
 
 diff=(diff_m)+(diff_f);
-np = 95;
-R_fp = prctile(abs(R_f),np,1);
-R_mp = prctile(abs(R_m),np,1);
-fprintf('The parameters are %4.8f \n', Parameters*6.6);
+np = 100;
+%R_fp = prctile(abs(R_f),np,1);
+%R_mp = prctile(abs(R_m),np,1);
+R_fp = max(abs(R_f));
+R_mp =max(abs(R_m));
+Pars(5)=Pars(5)*1e+2;
+fprintf('The parameters are %4.8f \n', Pars*6.6);
 fprintf('Final X difference within %d%% are %4.5e \n', np, R_fp(1));
 fprintf('Final PX difference within %d%% are %4.5e \n', np, R_fp(2));
 fprintf('Final Y difference within %d%% are %4.5e \n', np, R_fp(3));
 fprintf('Final PY difference within %d%% are %4.5e \n', np, R_fp(4));
 
-fprintf('Middle X difference within %d%% are %4.5e \n', np, R_mp(1));
-fprintf('Middle PX difference within %d%% are %4.5e \n', np, R_mp(2));
-fprintf('Middle Y difference within %d%% are %4.5e \n', np, R_mp(3));
-fprintf('Middle PY difference within %d%% are %4.5e \n', np, R_mp(4))
+% fprintf('Middle X difference within %d%% are %4.5e \n', np, R_mp(1));
+% fprintf('Middle PX difference within %d%% are %4.5e \n', np, R_mp(2));
+% fprintf('Middle Y difference within %d%% are %4.5e \n', np, R_mp(3));
+% fprintf('Middle PY difference within %d%% are %4.5e \n', np, R_mp(4))
 % fprintf('Final max differences are %4.5e \n', diff_f);
 % fprintf('Middle max differences are %4.5e \n', diff_m);
 fprintf('\n');
@@ -79,7 +84,7 @@ legend('Tracking MATLAB', 'PTC Reconstruction'); xlabel('x [mm]'); ylabel('y [mm
 subplot(3,1,2); hold on;
 plot(Xf(:,1)*1.0E+3,Xf(:,2)*1.0E+3,'ko'); plot(Xf_t(:,1)*1.0E+3,Xf_t(:,2)*1.0E+3,'rx');
 % legend('Tracking MATLAB', 'PTC Reconstruction'); 
-xlabel('x [mm]'); ylabel('xp [mrad]');
+xlabel('x [mm]'); ylabel('px [mrad]');
 
 subplot(3,1,3); hold on;
 plot(Xf(:,3)*1.0E+3,Xf(:,4)*1.0E+3,'ko'); plot(Xf_t(:,3)*1.0E+3,Xf_t(:,4)*1.0E+3,'rx');
@@ -94,12 +99,12 @@ xlabel('\Deltax [m]'); ylabel('\Deltay [m]');
 
 subplot(3,1,2); hold on;
 plot(Xf(:,1)-Xf_t(:,1),Xf(:,2)-Xf_t(:,2),'b.'); 
-xlabel('\Deltax [m]'); ylabel('\Deltaxp [rad]');
+xlabel('\Deltax [m]'); ylabel('\Deltapx [rad]');
 
 subplot(3,1,3); hold on;
 plot(Xf(:,3)-Xf_t(:,3),Xf(:,4)-Xf_t(:,4),'b.');
 xlabel('\Deltay [m]'); ylabel('\Deltapy [m]');
-
+return;
 %% Plot in the middle of the tracking
 figure; 
 subplot(3,1,1); hold on;title('In the middle of the tracking')
@@ -120,13 +125,13 @@ xlabel('y [mm]'); ylabel('py [mrad]');
 
 % plot differences
 figure; 
-subplot(3,1,1); hold on; title('At the end of the tracking')
+subplot(3,1,1); hold on; title('At the middle of the tracking')
 plot(Xm(:,1)-Xm_t(:,1),Xm(:,3)-Xm_t(:,3),'b.');
 xlabel('\Deltax [m]'); ylabel('\Deltay [m]');
 
 subplot(3,1,2); hold on;
 plot(Xm(:,1)-Xm_t(:,1),Xm(:,2)-Xm_t(:,2),'b.'); 
-xlabel('\Deltax [m]'); ylabel('\Deltaxp [rad]');
+xlabel('\Deltax [m]'); ylabel('\Deltapx [rad]');
 
 subplot(3,1,3); hold on;
 plot(Xm(:,3)-Xm_t(:,3),Xm(:,4)-Xm_t(:,4),'b.');

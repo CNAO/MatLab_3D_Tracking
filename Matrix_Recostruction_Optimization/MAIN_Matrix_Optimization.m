@@ -2,7 +2,7 @@ clc, clear, close all;
 
 global set;
 
-load('./Output_Matrix/matrix_SIG_0_48mm_45Gradi_n7_15mm.mat');
+load('..\Output_Matrix\matrix.mat');
 set.MX_mad_mid_minus40cm = M{1}(1:2,1:2);
 set.MY_mad_mid_minus40cm = M{1}(3:4,3:4);
 
@@ -39,19 +39,19 @@ set.theta = 45*pi/180;
 
 set.F= true; %set.F=true if the dipole is focusing in X, set.F=false if defocusing on X
 
-l1 = 0.22; %l1=l2 symmetric drifts
-phi_x= -0;
-phi_y= -0;
-kd = -0.0126;
+l1 = 0.24; %l1=l2 symmetric drifts
+phi_x= -0.1;
+phi_y= -0.1;
+kd = 0.001;
 R = 1.65;
-
+%%
 f=@Optimization_Matrix;  
 
 Parameters = [l1,kd, R,phi_x, phi_y ];
         
 % Boundaries
-lb =        [0  ,-0.5, 1.6, -0.4, -0.4 ];
-ub =        [0.3, 0.5, 1.8,  0.4,  0.4];
+lb =        [0.1  ,0, 1.6, 0, 0 ];
+ub =        [0.25, 0.5, 1.69,  0,  0];
 
 A = [];
 b = [];
@@ -85,39 +85,39 @@ R = results(3);
 l2 = l1;
 if set.F==true
 
-    MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_F(R*set.theta/2,kd,R)*...
-             M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid = M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus20cm = M_Dip_Quad_F(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus20cm  = M_Dip_Quad_F(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus40cm = M_Dip_Quad_F(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus40cm  = M_Dip_Quad_F(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+    MX_end = M_Drift(l2)*M_edge_x(phi_x,R)*M_Dip_Quad_F(R*set.theta/2,kd,R)*...
+             M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid = M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus20cm = M_Dip_Quad_F(R*set.theta/2-0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus20cm  = M_Dip_Quad_F(R*set.theta/2+0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus40cm = M_Dip_Quad_F(R*set.theta/2-0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus40cm  = M_Dip_Quad_F(R*set.theta/2+0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
     
-    MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_D(R*set.theta/2,kd)*...
-             M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid = M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus20cm = M_Quad_D(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus20cm  = M_Quad_D(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus40cm = M_Quad_D(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus40cm  = M_Quad_D(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+    MY_end = M_Drift(l2)*M_edge_y(phi_y,R)*M_Quad_D(R*set.theta/2,kd)*...
+             M_Quad_D(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid = M_Quad_D(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus20cm = M_Quad_D(R*set.theta/2-0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus20cm  = M_Quad_D(R*set.theta/2+0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus40cm = M_Quad_D(R*set.theta/2-0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus40cm  = M_Quad_D(R*set.theta/2+0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
     
 else
     
-    MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_D(R*set.theta/2,kd,R)*...
-             M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid = M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus20cm = M_Dip_Quad_D(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus20cm = M_Dip_Quad_D(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus40cm = M_Dip_Quad_D(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus40cm = M_Dip_Quad_D(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+    MX_end = M_Drift(l2)*M_edge_x(phi_x,R)*M_Dip_Quad_D(R*set.theta/2,kd,R)*...
+             M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid = M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus20cm = M_Dip_Quad_D(R*set.theta/2-0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus20cm = M_Dip_Quad_D(R*set.theta/2+0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus40cm = M_Dip_Quad_D(R*set.theta/2-0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus40cm = M_Dip_Quad_D(R*set.theta/2+0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
       
-    MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_F(R*set.theta/2,kd)*...
-             M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid = M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus20cm = M_Quad_F(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus20cm = M_Quad_F(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus40cm = M_Quad_F(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus40cm = M_Quad_F(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+    MY_end = M_Drift(l2)*M_edge_y(phi_y,R)*M_Quad_F(R*set.theta/2,kd)*...
+             M_Quad_F(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid = M_Quad_F(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus20cm = M_Quad_F(R*set.theta/2-0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus20cm = M_Quad_F(R*set.theta/2+0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus40cm = M_Quad_F(R*set.theta/2-0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus40cm = M_Quad_F(R*set.theta/2+0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
     
 end
 
@@ -140,7 +140,7 @@ X = reshape(X,1,[]);
 PX = reshape(PX,1,[]);
 Y = reshape(Y,1,[]);
 PY = reshape(PY,1,[]);
-
+%%
 % At the end of the magnet
 err = max(abs(set.MX_mad_end*[X;PX]-MX_end*[X;PX]),[],2);
 fprintf('Max Error X end = %e [m] \n',err(1));
@@ -190,8 +190,13 @@ fprintf('Max Error PX mid + 40 cm = %e [rad] \n\n',err(2));
 err = max(abs(set.MY_mad_mid_plus40cm*[Y;PY]-MY_mid_plus40cm*[Y;PY]),[],2);
 fprintf('Max Error Y mid + 40 cm = %e [m] \n',err(1));
 fprintf('Max Error PY mid + 40 cm = %e [rad] \n\n',err(2));
+
+%% save results in a file matlab
+
+save results.mat results -mat
+
 return
-%%
+%% save results in a file txt
 beam_r=15*sqrt(2);
 
 fid=fopen('Results_SIG_0_48mm_45Gradi_n7_15mm.txt','w');

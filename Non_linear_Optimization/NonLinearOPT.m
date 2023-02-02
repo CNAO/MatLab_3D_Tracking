@@ -3,14 +3,14 @@ function diff = NonLinearOPT(Parameters)
 global diff_old;
 
 % Read the output file of tracking
-fid=fopen(['..\Output_Particles\Local_Output_LF_SIG_0_48mm_45Gradi_n7_15mm.csv'],'r');
+fid=fopen('..\Output_Particles\Local_Output_lf.csv','r');
 readFormat = '%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f';
 temp = textscan(fid,readFormat,'HeaderLines',1);
 fclose(fid);
 % Phase space vector of final local coordinates of tracking particles
 Xf=[temp{1}, temp{2}, temp{3}, temp{4}];
 
-fid=fopen('..\Output_Particles\Local_Output_LM_SIG_0_48mm_45Gradi_n7_15mm.csv','r');
+fid=fopen('..\Output_Particles\Local_Output_lm.csv','r');
 readFormat = '%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f';
 temp = textscan(fid,readFormat,'HeaderLines',1);
 fclose(fid);
@@ -18,14 +18,16 @@ fclose(fid);
 Xm=[temp{1}, temp{2}, temp{3}, temp{4}];
 
 %% Parameters assignation
-
-kl1 = Parameters(1);
-kl2= Parameters(2);
-kl3 = Parameters(3);
-kl4 = Parameters(4);
-ksex = Parameters(5);
+kl0=Parameters(1);
+kl1 = Parameters(2);
+kl2= Parameters(3);
+kl3 = Parameters(4);
+kl4 = Parameters(5);
+ksex = Parameters(6);
+load('..\Matrix_Recostruction_Optimization\results.mat');
+init_pars=results;
 filename='main_decapole.madx';
-Write_MADX_mainfile(kl1,kl2,kl3,kl4,ksex,filename)
+Write_MADX_mainfile(init_pars,kl0,kl1,kl2,kl3,kl4,ksex,filename)
 
 % Run mad-x
 [status]=system(['madx.exe ',filename,' > nul']);
@@ -36,10 +38,10 @@ end
 [Xf_t,Xm_t]=Load_Final_Vector();
 % Compare the two vector (absolute error)
 R_f=Xf-Xf_t;
-diff_f=max(abs(R_f));
+diff_f=max(abs(R_f(:,:)));
 sum_diff_f=sum(diff_f);
 R_m=Xm-Xm_t;
-diff_m=max(abs(R_m));
+diff_m=max(abs(R_m(:,:)));
 sum_diff_m=sum(diff_m);
 diff= (sum_diff_m)+(sum_diff_f);
 
@@ -53,7 +55,7 @@ if diff<diff_old
 
 %     fprintf('Middle sum differences are %4.5f \n', diff_m);
 
-    save('Results_SIG_0_48mm_45Gradi_n7_15mm_v00.mat', 'Parameters', 'diff_f', 'diff_m');
+    save('Results_non_lin.mat', 'Parameters', 'diff_f', 'diff_m');
 end
 
 

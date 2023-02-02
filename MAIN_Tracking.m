@@ -6,7 +6,7 @@ tic
 
 fprintf('Loading Field and create Interpolation Functions ... \n');
 % folder = 'Field/SIG_48Gradi_OPERA_error/';
-folder = 'Field/SIG_0_48mm_45GradiMagnet/BOXDATA/Dati_SIG_36s_0_48mm_c_IronOptimized_3D_f_tot_Tuned_45gradi_202_160_445/';
+folder = 'Field/SIG_0_48mm_45GradiMagnet/BOXDATA/2022_09_23_SIG_return_ends_curved_70mm_202_160_445/';
 fileName = 'BOX.mat';
 
 gridded_data = true; % = TRUE  if we work with gridded data
@@ -60,8 +60,8 @@ toc
 %% 3D Tracking
 
 %CVS file with input particles
-part_file_txt = "Input_Particles/Particle_SIG_0_gauss_bx10_ax0_1000.csv";
-% part_file_txt = "Input_Particles/Particle_SIG_0_n7_15mm.csv";
+part_file_txt = "Input_Particles/Input.csv";
+%part_file_txt = "Input_Particles/Particle_IN_gaussian_2sigma.csv";
 
 settings.A_n = 12;   % Mass Number A (number of nucleons)
 settings.Z_n = -6;    % Atomic number Z (number of protons) !Negative value for BACKtracking
@@ -70,11 +70,19 @@ tic %taking the time
 settings = Tracking_3D_From_File_refsystem(settings, part_file_txt);
 toc
 
-% return
+ return
 %% Post Processing and Plots
 
 PostProcessing_Tracking_3D_fInterp
+%%
+Trasformation_Coordinates
 
+%% Write output coordinates in a csv file
+type=1; return
+%% Middle 
+Write_Output_Particles(X_local,p_local,phi,theta,l0,Ideal,428.4945,settings.N,x,y,z,type,'_l0');
+%% Final
+Write_Output_Particles(X_local,p_local,phi,theta,lf,Ideal,428.4945,settings.N,x,y,z,type,'_lf');
 
 
 
