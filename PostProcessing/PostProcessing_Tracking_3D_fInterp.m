@@ -11,7 +11,7 @@ vz = settings.X(:,5*settings.N+1:6*settings.N);
 figure; hold on; grid on; box on; axis equal;
 
 for i=1:10:settings.N
-    hh(1)=plot3(x(:,i),-0.1+y(:,i),z(:,i),'b-','LineWidth',0.8,'DisplayName','Tracking');
+    hh(1)=plot3(x(:,i),y(:,i),z(:,i),'b-','LineWidth',0.8,'DisplayName','Tracking');
 %     hh(2)=plot3(xx2(:,i),zeros(size(xx2,1),1),zz2(:,i),'g','LineWidth',2.5,'DisplayName','Backtracking');
 end
 
@@ -124,5 +124,5 @@ legend('Arc + straight','Arc of 62 deg','Tracking')
 xlabel('x [m]'); ylabel('y [m]'); zlabel('z [m]');
 % view(3);
 xlim([-0.25 -0.1]);
-zlim([0.68 0.88]);
+zlim([-0.88 -0.68]);
 view(0,0);

@@ -29,15 +29,15 @@ end
 %% Definition of global variable
 
 %Finding the ideal particle have X=(0,0,0,0) in global system
-% for i=1:size(x,2)
-%     if y(1,i)==0 && x(1,i)==0 && vx(1,i)==0 && vy(1,i)==0
-%         Ideal=i ; %Ideal particle
-%         break;
-%     else
-%         Ideal=fix(size(x,2)/2)+1;
-%     end
-% end 
-Ideal = 1; %in the beam distribution, the ideal particle is added as first
+for i=1:size(x,2)
+    if y(1,i)==0 && x(1,i)==0 && vx(1,i)==0 && vy(1,i)==0
+        Ideal=i ; %Ideal particle
+        break;
+    else
+        Ideal=fix(size(x,2)/2)+1;
+    end
+end 
+%Ideal = 1; %in the beam distribution, the ideal particle is added as first
 
 phi=zeros(1,size(x,1)); %phi is define like the angle between y and xz plane axis in global system (azimutal angle)
 theta=zeros(1,size(x,1));  %theta is define the angle between z and x plane axis in global system (- polar angle)
@@ -75,7 +75,8 @@ l2=find(step(:)>step(lm)-0.2,1); %0.2 cm before half magnet
 l3=find(step(:)>step(lm)+0.2,1); %0.2 cm after half magnet
 l4=find(step(:)>step(lm)+0.4,1); %0.4 cm after half magnet
 lnew=find(step(:)>1.65*5*pi/180,1);
-lf=size(x,1); % end of the field map
+lf=find(step(:)>0.8*2,1); % end of the field map
+% lf=size(x,1); % end of the field map
 
 % l0 = find(z(:,Ideal)>z(1,Ideal)+0.05,1);
 % lf = find(z(:,Ideal)>z(end,Ideal)-0.05,1);
@@ -84,7 +85,7 @@ lf=size(x,1); % end of the field map
 Dt=[l0,l0+1,l1-1:l1,l2-1:l2,lm-1:lm,l3-1:l3,l4-1:l4,lf-1:lf]; %for defined time step (+1 20 and 40 cm) used for matrix optimization
 % Dt=[lm-1:lm,lf-1:lf]; 
 % Dt=[l0:l0+1,lnew-1:lnew,lf-1:lf]; %few time step with central part
-% Dt=linspace(1,size(x,1),size(x,1)); %for every time step
+%Dt=linspace(1,size(x,1),size(x,1)); %for every time step
 j=1;
 while j<size(Dt,2)+1
     t=Dt(j);
@@ -92,11 +93,11 @@ while j<size(Dt,2)+1
 
     V=sqrt(vx(t,Ideal)^2+vy(t,Ideal)^2+vz(t,Ideal)^2); %total velocity
     phi(t)=acos(vy(t,Ideal)/V); 
-    theta(t)=acos(vz(t,Ideal)/(V*sin(phi(t))));
-    
+    theta(t)=acos(vz(t,Ideal)/(V*sin(phi(t))))*sign(vx(t,Ideal));
+
     %Pay attention that the rotation must be anticlockwise 
     Mrx=MatrixRotationBuilder(pi/2-phi(t),1);
-    Mry=MatrixRotationBuilder(-theta(t)*sign(vx(t,Ideal)),2);
+    Mry=MatrixRotationBuilder(-theta(t),2);
 
     
 
@@ -125,7 +126,7 @@ while j<size(Dt,2)+1
         else
             px(t,i)=(x1(t,i)-x1(t-1,i))/ds(t-1);
             py(t,i)=(y1(t,i)-y1(t-1,i))/ds(t-1);
-        end
+       end
     end
     %Progress of the cycle for
     fprintf('Loading of transformation %2.2f percent\n',(t/size(x,1))*100);
@@ -139,7 +140,7 @@ for i=1:settings.N
     X_local{i}=[x1(:,i), y1(:,i), zeros(size(x1,1),1)]; %3 index: i)n° part j)time k) (1=>x,2=>y,3=>z) X{i}(j,k)
     p_local{i}=[px(:,i), py(:,i)];
 end
-return;
+
 %% Built linear & model transport matrix
 
 %Total transport matrix 4x4
@@ -149,7 +150,7 @@ return;
 [Mt_model,k]=ModelMatrixBuilder(Mt,l0,lf-1,step);
 % Plot section
 Plot_matrix_abs_err(1,X0,Xf,Mt);
-Plot_matrix_abs_err(1,X0,Xf,Mt_model);
+%Plot_matrix_abs_err(1,X0,Xf,Mt_model);
 
 %% Output file with Matrix linear extrapolation
 % Write an output file in the directory called "Matrix_output" in wich
@@ -162,8 +163,8 @@ for i=1:size(time,2) %i goes from 1 to the number of the topic points
     M{i}=Mt;
 end
 
-save('Output_Matrix/matrix_SIG_0_gauss_bx5_ax0_500_0p05.mat', 'M');
-
+save('Output_Matrix/matrix.mat', 'M');
+return;
 %% Output file with Matrix third order
 % Write an output file in the directory called "Matrix_output" in wich
 % there are all the transport matrix extrapolated
@@ -176,6 +177,10 @@ for i=1:size(time,2) %i goes from 1 to the number of the topic points
 end
 
 save('Output_Matrix/matrix_2_5_1.mat', 'M');
+
+%% Maximum radius (for evaluate the beam envelope if is grater or not than the good field region)
+
+
 
 %% Twiss parameters extrapolation
 emittance=1e-6;
@@ -233,12 +238,13 @@ return;
 
 
 %% Write output coordinates in a csv file
-type=1; %Type=1 write output in local coordinates (of all particles - Non Linear Matrix optimization)
+type=2; %Type=1 write output in local coordinates (of all particles - Non Linear Matrix optimization)
 % else in global coordinates (only the ideal particle - for back tracking)
 %% Middle 
 Write_Output_Particles(X_local,p_local,phi,theta,lm,Ideal,428.4945,settings.N,x,y,z,type);
 %% Final
 Write_Output_Particles(X_local,p_local,phi,theta,lf,Ideal,428.4945,settings.N,x,y,z,type);
+
 
 
 

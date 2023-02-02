@@ -17,41 +17,79 @@ R = Parameters(3);
 % l2 = s_tot-l1-R*set.theta;
 l2 = l1;
 
+% if set.F==true
+% 
+%     MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_F(R*set.theta/2,kd,R)*...
+%              M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid = M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_minus20cm = M_Dip_Quad_F(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_plus20cm  = M_Dip_Quad_F(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_minus40cm = M_Dip_Quad_F(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_plus40cm  = M_Dip_Quad_F(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     
+%     MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_D(R*set.theta/2,kd)*...
+%              M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid = M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_minus20cm = M_Quad_D(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_plus20cm  = M_Quad_D(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_minus40cm = M_Quad_D(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_plus40cm  = M_Quad_D(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     
+% else
+%     
+%     MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_D(R*set.theta/2,kd,R)*...
+%              M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid = M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_minus20cm = M_Dip_Quad_D(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_plus20cm = M_Dip_Quad_D(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_minus40cm = M_Dip_Quad_D(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%     MX_mid_plus40cm = M_Dip_Quad_D(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+%       
+%     MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_F(R*set.theta/2,kd)*...
+%              M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid = M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_minus20cm = M_Quad_F(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_plus20cm = M_Quad_F(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_minus40cm = M_Quad_F(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     MY_mid_plus40cm = M_Quad_F(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+%     
+% end
+
 if set.F==true
 
-    MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_F(R*set.theta/2,kd,R)*...
-             M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid = M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus20cm = M_Dip_Quad_F(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus20cm  = M_Dip_Quad_F(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus40cm = M_Dip_Quad_F(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus40cm  = M_Dip_Quad_F(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+    MX_end = M_Drift(l2)*M_edge_x(phi_x,R)*M_Dip_Quad_F(R*set.theta/2,kd,R)*...
+             M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid = M_Dip_Quad_F(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus20cm = M_Dip_Quad_F(R*set.theta/2-0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus20cm  = M_Dip_Quad_F(R*set.theta/2+0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus40cm = M_Dip_Quad_F(R*set.theta/2-0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus40cm  = M_Dip_Quad_F(R*set.theta/2+0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
     
-    MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_D(R*set.theta/2,kd)*...
-             M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid = M_Quad_D(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus20cm = M_Quad_D(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus20cm  = M_Quad_D(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus40cm = M_Quad_D(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus40cm  = M_Quad_D(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+    MY_end = M_Drift(l2)*M_edge_y(phi_y,R)*M_Quad_D(R*set.theta/2,kd)*...
+             M_Quad_D(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid = M_Quad_D(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus20cm = M_Quad_D(R*set.theta/2-0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus20cm  = M_Quad_D(R*set.theta/2+0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus40cm = M_Quad_D(R*set.theta/2-0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus40cm  = M_Quad_D(R*set.theta/2+0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
     
 else
     
-    MX_end = M_Drift(l2)*M_edge(phi_x,R)*M_Dip_Quad_D(R*set.theta/2,kd,R)*...
-             M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid = M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus20cm = M_Dip_Quad_D(R*set.theta/2-0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus20cm = M_Dip_Quad_D(R*set.theta/2+0.2,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_minus40cm = M_Dip_Quad_D(R*set.theta/2-0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
-    MX_mid_plus40cm = M_Dip_Quad_D(R*set.theta/2+0.4,kd,R)*M_edge(phi_x,R)*M_Drift(l1);
+    MX_end = M_Drift(l2)*M_edge_x(phi_x,R)*M_Dip_Quad_D(R*set.theta/2,kd,R)*...
+             M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid = M_Dip_Quad_D(R*set.theta/2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus20cm = M_Dip_Quad_D(R*set.theta/2-0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus20cm = M_Dip_Quad_D(R*set.theta/2+0.2,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_minus40cm = M_Dip_Quad_D(R*set.theta/2-0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
+    MX_mid_plus40cm = M_Dip_Quad_D(R*set.theta/2+0.4,kd,R)*M_edge_x(phi_x,R)*M_Drift(l1);
       
-    MY_end = M_Drift(l2)*M_edge(-phi_y,R)*M_Quad_F(R*set.theta/2,kd)*...
-             M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid = M_Quad_F(R*set.theta/2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus20cm = M_Quad_F(R*set.theta/2-0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus20cm = M_Quad_F(R*set.theta/2+0.2,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_minus40cm = M_Quad_F(R*set.theta/2-0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
-    MY_mid_plus40cm = M_Quad_F(R*set.theta/2+0.4,kd)*M_edge(-phi_y,R)*M_Drift(l1);
+    MY_end = M_Drift(l2)*M_edge_y(phi_y,R)*M_Quad_F(R*set.theta/2,kd)*...
+             M_Quad_F(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid = M_Quad_F(R*set.theta/2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus20cm = M_Quad_F(R*set.theta/2-0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus20cm = M_Quad_F(R*set.theta/2+0.2,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_minus40cm = M_Quad_F(R*set.theta/2-0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
+    MY_mid_plus40cm = M_Quad_F(R*set.theta/2+0.4,kd)*M_edge_y(phi_y,R)*M_Drift(l1);
     
 end
 

@@ -4,14 +4,15 @@
 M_Drift = @(s)[1, s;  0, 1];    
 
 %Quadrupoles
-M_Quad_F = @(s,k)[cos(sqrt(abs(k))*s), 1/sqrt(abs(k))*sin(sqrt(abs(k))*s); -sqrt(abs(k))*sin(sqrt(abs(k))*s), cos(sqrt(abs(k))*s)];          %focusing 
-M_Quad_D = @(s,k)[cosh(sqrt(abs(k))*s), 1/sqrt(abs(k))*sinh(sqrt(abs(k))*s); sqrt(abs(k))*sinh(sqrt(abs(k))*s), cosh(sqrt(abs(k))*s)]; %defocusig 
+M_Quad_F = @(s,k)[cos(sqrt(abs(k))*s), (1/sqrt(abs(k)))*sin(sqrt(abs(k))*s); -sqrt(abs(k))*sin(sqrt(abs(k))*s), cos(sqrt(abs(k))*s)];          %focusing 
+M_Quad_D = @(s,k)[cosh(sqrt(abs(k))*s), (1/sqrt(abs(k)))*sinh(sqrt(abs(k))*s); sqrt(abs(k))*sinh(sqrt(abs(k))*s), cosh(sqrt(abs(k))*s)]; %defocusig 
 
 %Dipole
 M_Dip = @(phi,R)[cos(phi), R*sin(phi); -1/R*sin(phi), cos(phi)]; 
 
 %Edge 
-M_edge =@(phi,R)[1,0; tan(phi)/R, 1];
+M_edge_x =@(phi,R)[1,0; tan(phi)/R, 1];
+M_edge_y =@(phi,R)[1,0; -tan(phi)/R, 1];
 
 %Comboined function Dipole and Quadrupole
 %[Transfer matrices of superimposed magnets and RF cavity - Chun-xi Wang and Alex Chao ]

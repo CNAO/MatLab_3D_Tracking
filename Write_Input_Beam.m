@@ -4,7 +4,7 @@ clc; clear; close all;
 var=0;
 if var==0
     % Reading from a previous tracking and output file 
-    fid= fopen('Output_Particles\Global_Output_SIG_0_48mm_45Gradi.csv','r');
+    fid= fopen('Output_Particles\Global_Output.csv','r');
     readFormat = '%f, %f, %f, %f, %f, %f, %f, %f';
     temp = textscan(fid,readFormat,'HeaderLines',1);
     fclose(fid);
@@ -18,14 +18,14 @@ else
 end
 %% Beam input file
 
-load_from_file = true;  % if true load a particle distribution from BeamGen
+load_from_file = false;  % if true load a particle distribution from BeamGen
                         % if false generate gridded particle distribution
 
 %Load particle distribution from an existing file created with BeamGen 
 if load_from_file == true
     folder = 'C:\Users\enrico.felcini\Desktop\GIT\MatLab_3D_Tracking\Baem_Generation\';
-    [x,px,y,py,dp] = load_distribution([folder,'part_MAT_gauss_bx10_ax0_1000.txt']);
-    Enom = 428.4945; % [Mev/u] nominal beam energy
+    [x,px,y,py,dp] = load_distribution([folder,'part_MAT_gauss_bx10_ax0_2sigma_1000.txt']);
+    Enom = 430; % [Mev/u] nominal beam energy
     En = Enom*(1+dp);
 else 
     %Generate a gridded particle distribution
@@ -33,21 +33,21 @@ else
     l=15*1e-3; % [m]   square beam size (x,y)
     p=1*1e-3;  % [rad] square beam divergence (px, py)
     [x,px,y,py] = gridded_distribution(n,l,p);
-    En=linspace(428.4945,428.4945,length(x));
+    En=linspace(426.325,426.325,length(x));
 end
 
-fileID = fopen('Input_Particles\Particle_SIG_0_gauss_bx10_ax0_1000.csv','w');
+fileID = fopen(['Input_Particles\Input.csv'],'w');
 fprintf(fileID, 'X[m],pX,Y[m],pY,Theta[rad],Phi[rad],Id,En[MeV],Xideal[m],Yideal[m],Zideal[m]\n');
 for i=1:length(x)
     fprintf(fileID,'%12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f, %12.12f\n',x(i),px(i),y(i),py(i),theta,phi,i,En(i),x0,y0,z0);
 end
 fclose(fileID);
-return
-%% Plots for verification
-figure; plot(x,y,'.', 'MarkerSize',0.1); axis equal;
-figure; plot(x,px,'.', 'MarkerSize',0.1); axis equal;
-figure; plot(y,py,'.', 'MarkerSize',0.1); axis equal;
 
+%% Plots for verification
+figure; plot(x,y,'.', 'MarkerSize',0.1); axis equal; xlabel('x [m]'); ylabel('y [m]');
+figure; plot(x,px,'.', 'MarkerSize',0.1); axis equal; xlabel('x [m]'); ylabel('px [rad]');
+figure; plot(y,py,'.', 'MarkerSize',0.1); axis equal; xlabel('y [m]'); ylabel('py [rad]');
+return
 %% ---------------------- Functions Definition ------------------------- %%
 
 function [x,px,y,py] = gridded_distribution(n,l,p)
